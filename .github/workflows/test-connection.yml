@@ -1,0 +1,29 @@
+
+name: Test Minecraft Connection
+
+on:
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - run: npm install
+
+      - name: Try connecting for up to 2 minutes
+        run: |
+          set +e
+          timeout 120s node index.js
+          result=$?
+          if [ "$result" -eq 124 ]; then
+            echo "Test window ended."
+            exit 0
+          fi
+          exit "$result"
